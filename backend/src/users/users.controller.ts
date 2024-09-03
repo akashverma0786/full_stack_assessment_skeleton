@@ -6,7 +6,7 @@ import { User } from './entities/user.entity';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get()
+  @Get('/find-all')
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
