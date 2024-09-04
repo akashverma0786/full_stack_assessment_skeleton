@@ -127,9 +127,35 @@ docker-compose -f docker-compose.initial.yml up --build -d
   - so you must **NOT** use Entity first development, where you write your ORM entities and generate SQL migration scripts
   - instead you directly write SQL script, that makes all the changes you want to the DB
 
-### solution
+## solution
 
-> explain briefly your solution for this problem here
+> change directory to the root directory full_stack_assessment_skeleton/
+- About the sql solution :-
+### SQL Script
+- inside `99_final_db_dump.sql` we have our final script for extracting data,
+- First we created two tables `user` and `home` that makes data extraction easy for particular endpoints,
+- Next we are populating `user` and `home` tables from `user_home`.
+- Next we added empty `user_id` and `home_id` columns in `user_home` table for relations and then updating correct data into it,
+- At last we add foreign key constraints to maintain referential integrity.
+
+### Run DB using Docker image
+  - If you have the initial script running , first we need to close it,
+  ```bash
+  docker-compose -f docker-compose.initial.yml down
+  ```
+  
+  - now fire up the new one, that will run our final script
+  
+  ```bash
+   docker-compose -f docker-compose.final.yml up --build -d
+  ```
+  - to check if the command is successfull you can write
+  ```bash
+   docker ps
+  ```
+  - image named `mysql_ctn_final` should be running.
+  
+  ### After this go scroll to backend
 
 ## 2. React SPA
 
@@ -220,8 +246,47 @@ docker-compose -f docker-compose.initial.yml up --build -d
 
 ### solution
 
-> explain briefly your solution for this problem here
+- Before jumping to frontend make sure your docker db image and backend server is running
+- you can check by accessing any endpoint like - [All-Users](http://localhost:3000/users/find-all)
 
+- For frontend we are using Vite javascript
+- Tailwind CSS for CSS
+- Redux toolkit for state management
+- React-loading-skeleton
+
+- First change your working directory to frontend , it should look like `..full_stack_assessment_skeleton/frontend
+- Run this command for installing all the dependencies
+```bash
+npm install
+```
+- now you are ready to spin the frontend server
+```bash
+npm run dev
+```
+- frontend will be available on `http://localhost:5173`
+- make sure your port:5173 is not being used already
+- In your terminalyou can see server running on `http://localhost:5173`
+- for macOS you can `command + click`, for windows `ctrl + click` on `http://localhost:5173`
+- You will be automatically Navigated to frontend
+- Select a user from the dropdown and you see all the homes related to the user
+- click on Edit user a modal will open which will have already checked the users related to the home
+- to add/remove a user you can check/uncheck them and hit save
+- If you dont want to do anything you can simply click cancel and nothing will happen
+- I am providing you a video of how will the frontend look
+- [Watch how frontend looks after everything turns out okay](https://drive.google.com/file/d/1V8wOBX99gUzwreQYW6ufOveCZMK1qOpf/view?usp=drive_link)
+## Pagination
+- I did pagination in frontend but was unable to modify the css properly but I have provided the code for pagination ,
+- go to the file `full_stack_assessment_skeleton/frontend/src/pages/HomesPage.jsx`
+- if you go to file in Ide i have provided appropriate detailed comments in code itself to which lines to uncomment for accessing pagination
+- to uncomment in macos `command + /`, windows `ctrl + /`
+- Uncomment lines 22-23, 36-38, 83-86, 136-148 and change `homes?.map` to `currentHomes?.map` in line 116.
+- Heres a video that shows how the frontend looks after pagination
+- [Watch how frontend looks after pagination](https://drive.google.com/file/d/1yDzrdG9vU0BKyYU90SgN2Kfw0MrBfQyb/view?usp=drive_link)
+
+- At last here are some pics
+ ![edit user modal](images/Edit User Modal.png)
+ ![Frontend](images/FrontEnd.png)
+  
 ## 3. Backend API development on Node
 
 ### problem
@@ -232,18 +297,18 @@ docker-compose -f docker-compose.initial.yml up --build -d
 
 - create **REST APIs**, we'll need the following APIs:
 
-  - **/user/find-all**
+  - **/users/find-all**
     - should return all users from DB
 
-  - **/home/find-by-user**
+  - **/homes/find-by-user**
     - should return all homes related to a user
     - this is consumed in UI to show home cards
 
-  - **/user/find-by-home**
+  - **/users/find-by-home**
     - should return all users related to a home
     - this is consumed in UI, in the `Edit Users` modal
 
-  - **/home/update-users**
+  - **/homes/update-users**
     - this API should take in the new bunch of users (from the modal after `Save`) and the home for which the `Edit Users` button was clicked
     - this API should mutate the DB, to reflect the new set of users related to the home
 
@@ -252,11 +317,11 @@ docker-compose -f docker-compose.initial.yml up --build -d
     - you use suitable HTTP methods for the REST APIs
     - should only use JSON as the interface
     - if possible, sanitize the data sent in the request
-    - the `/home/update-users` API is idempotent
+    - the `/homes/update-users` API is idempotent
   
 - **[<ins>extra</ins>] add pagination**
 
-  - for `/home/find-by-user` API add pagination support:
+  - for `/homes/find-by-user` API add pagination support:
 
     - page size should be 50
     - add _very_ basic pagination UI to `homes for user page` in [frontend](#2-react-spa)
@@ -279,9 +344,55 @@ docker-compose -f docker-compose.initial.yml up --build -d
 
     - we do NOT want raw SQL, if none of above works, you can use any ORM you know, but please mention and link to it in the README
 
-### solution
+## solution
 
-> explain briefly your solution for this problem here
+> Before jumping into backend make sure your docker database image is running properly
+- Our backend is written using NestJS typescript
+- For interacting with DB we have used TypeORM
+- Navigate to the backend file
+```bash
+cd backend/
+```
+- your current working directory should look like `..full_stack_assessment_skeleton/backend`
+- - Run this command for installing all the dependencies
+```bash
+npm install
+```
+- spin up the backend server in development mode
+```bash
+npm run start:dev
+```
+### we have different endpoints
+- for fetching all the users
+```bash
+http://localhost:3000/users/find-all
+```
+- for fetching a particular user, replace user_id with a integer within bounds e.g. 1
+- user_id = 1 might not be associated with username: user1 so dont get confused it might be user7 or else
+```bash
+http://localhost:3000/users/user_id
+```
+- for fetchung all users related to a home
+```bash
+http://localhost:3000/users/find-by-home/user_id
+```
+- for fetching all the homes
+```bash
+http://localhost:3000/homes
+```
+- for fetching a particular home, replace user_id with a integer within bounds e.g. 1
+```bash
+http://localhost:3000/homes/home_id
+```
+- for fetching all the homes related to a user
+```bash
+http://localhost:3000/homes/find-by-user/home_id
+```
+- for updating users related to a home(You might not need to access this, we need it for frontend only)
+```bash
+http://localhost:3000/homes/update-users
+```
+## Now you can go to frontend
 
 ## Submission Guidelines
 
