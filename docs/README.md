@@ -284,7 +284,7 @@ npm run dev
 - [Watch how frontend looks after pagination](https://drive.google.com/file/d/1yDzrdG9vU0BKyYU90SgN2Kfw0MrBfQyb/view?usp=drive_link)
 
 - At last here are some pics
- ![edit user modal](images/Edit User Modal.png)
+ ![edit user modal](images/edit_user.png)
  ![Frontend](images/FrontEnd.png)
   
 ## 3. Backend API development on Node
