@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Home } from './entities/home.entity';
 import { UserHome } from '../user_home/entities/user_home.entity';
+import { UpdateHomeUsersDto } from './dto/update-home-users.dto';
 
 @Injectable()
 export class HomesService {
@@ -18,8 +19,14 @@ export class HomesService {
     return this.homesRepository.find();
   }
 
+  // findOne(home_id: number): Promise<Home> {
+  //   return this.homesRepository.findOneBy({ home_id });
+  // }
   findOne(home_id: number): Promise<Home> {
-    return this.homesRepository.findOneBy({ home_id });
+    return this.homesRepository.findOne({
+      where: { home_id },
+      relations: ['userHomes', 'userHomes.user'], // Add this line to include users
+    });
   }
 
   async findByUser(userId: number): Promise<Home[]> {
@@ -28,6 +35,21 @@ export class HomesService {
       relations: ['home'],
     });
     return userHomes.map((userHome) => userHome.home);
+  }
+  async updateHomeUsers(updateHomeUsersDto: UpdateHomeUsersDto) {
+    const { homeId, newUserIds } = updateHomeUsersDto;
+
+    // Remove existing relationships
+    await this.userHomeRepository.delete({ home_id: homeId });
+
+    // Add new relationships
+    const userHomeRelations = newUserIds.map((userId) => ({
+      user_id: userId,
+      home_id: homeId,
+    }));
+    await this.userHomeRepository.save(userHomeRelations);
+
+    return { message: 'Users updated successfully' };
   }
 }
 

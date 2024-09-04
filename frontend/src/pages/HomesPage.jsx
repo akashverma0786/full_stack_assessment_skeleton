@@ -18,7 +18,7 @@ const HomesPage = () => {
   const { users, loading: usersLoading } = useSelector((state) => state.users);
   const [selectedUserId, setSelectedUserId] = useState(null);
 
-  const { data: homes, isLoading: homesLoading } = useQuery({
+  const { data: homes, isLoading: homesLoading, refetch } = useQuery({
     queryKey: ['homes', selectedUserId],
     queryFn: () => fetchHomesByUser(selectedUserId),
     enabled: !!selectedUserId,
@@ -37,12 +37,58 @@ const HomesPage = () => {
   const [currentUsers, setCurrentUsers] = useState([]);
 
   const openEditUserModal = (homeId) => {
+    console.log('Opening Edit User Modal with Home ID:', homeId);
     setSelectedHomeId(homeId);
     // Assuming `homes` has the users related to the home, otherwise, fetch the data
     const home = homes.find((h) => h.home_id === homeId);
-    setCurrentUsers(home?.users.map((user) => user.user_id) || []);
+    console.log('Selected Home:', home);
+    console.log(home.userHomes.forEach(userHome => {
+      console.log('User ID:', userHome.user_id);
+    }));
+
+    // setCurrentUsers(home?.users?.map((user) => user.user_id) || []);
+    // console.log('Current User IDs:', home?.users?.map((user) => user.user_id) || []);
+    // if (home && home.userHomes) {
+    //   // Extract user_id from each userHome entry
+    //   const userIds = home.userHomes.map((userHome) => userHome.user.user_id);
+    //   console.log('Extracted User IDs:', userIds);
+    //   setCurrentUsers(userIds);
+    // } else {
+    //     console.warn('No userHomes found for the selected home.');
+    //     setCurrentUsers([]);
+    // }
+    if (home && home.userHomes) {
+      // Ensure home.userHomes is an array and each entry has the user object
+      if (Array.isArray(home.userHomes)) {
+          const userIds = home.userHomes.map((userHome) => {
+              if (userHome) {
+                  return userHome.user_id;
+              } else {
+                  console.warn('userHome entry does not have a user object:', userHome);
+                  return null; // Or handle as needed
+              }
+          }).filter((id) => id !== null); // Remove any null values if userHome.user was missing
+          console.log('Extracted User IDs:', userIds);
+          setCurrentUsers(userIds);
+      } else {
+          console.warn('home.userHomes is not an array:', home.userHomes);
+          setCurrentUsers([]);
+      }
+  } else {
+      console.warn('No userHomes found for the selected home.');
+      setCurrentUsers([]);
+  }
+
     setIsModalOpen(true);
   };
+
+  const handleSaveChanges = () => {
+    refetch(); // Refetch homes to reflect changes
+  };
+  // const closeEditUserModal = () => {
+  //   setIsModalOpen(false);
+  //   refetchHomes(); // Refetch homes after closing the modal
+  // };
 
   React.useEffect(() => {
     dispatch(fetchUsers());
@@ -98,8 +144,10 @@ const HomesPage = () => {
       <EditUserModal
         isOpen={isModalOpen}
         onRequestClose={() => setIsModalOpen(false)}
+        // onRequestClose={closeEditUserModal}
         homeId={selectedHomeId}
         currentUsers={currentUsers}
+        onSave={handleSaveChanges}
       />
     </div>
   );

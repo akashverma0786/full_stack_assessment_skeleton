@@ -28,7 +28,7 @@ export class Home {
   @Column('decimal', { precision: 15, scale: 2 })
   list_price: number;
 
-  @OneToMany(() => UserHome, (userHome) => userHome.home)
+  @OneToMany(() => UserHome, (userHome) => userHome.home, { eager: true })
   userHomes: UserHome[];
 }
 
