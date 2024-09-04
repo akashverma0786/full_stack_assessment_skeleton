@@ -11,13 +11,3 @@ import { UserHome } from '../user_home/entities/user_home.entity';
   providers: [HomesService],
 })
 export class HomesModule {}
-
-// import { Module } from '@nestjs/common';
-// import { HomesService } from './home.service';
-// import { HomesController } from './home.controller';
-
-// @Module({
-//   controllers: [HomesController],
-//   providers: [HomesService],
-// })
-// export class HomeModule {}

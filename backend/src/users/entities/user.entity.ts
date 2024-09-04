@@ -3,7 +3,6 @@ import { UserHome } from '../../user_home/entities/user_home.entity';
 
 @Entity()
 export class User {
-  // @PrimaryGeneratedColumn()
   @PrimaryColumn()
   user_id: number;
 

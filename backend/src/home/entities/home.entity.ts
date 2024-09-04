@@ -1,9 +1,8 @@
 import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
-import { UserHome } from '../../user_home/entities/user_home.entity'; // Adjust the path as needed
+import { UserHome } from '../../user_home/entities/user_home.entity';
 
 @Entity()
 export class Home {
-  // @PrimaryGeneratedColumn()
   @PrimaryColumn()
   home_id: number;
 

@@ -3,10 +3,10 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  // CORS imp for update-users edp
   app.enableCors({
-    origin: 'http://localhost:5173', // Allow this origin
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allow these methods
+    origin: 'http://localhost:5173',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   });
 
   await app.listen(3000);

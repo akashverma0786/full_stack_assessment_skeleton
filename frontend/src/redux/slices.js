@@ -3,7 +3,6 @@ import axios from 'axios';
 
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
   const response = await axios.get('/users/find-all');
-//   console.log('API Response:', response.data);
   return response.data;
 });
 
